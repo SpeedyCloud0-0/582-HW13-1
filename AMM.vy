@@ -33,15 +33,15 @@ def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity
 def tradeTokens(sell_token: address, sell_quantity: uint256):
 	assert sell_token == self.tokenA.address or sell_token == self.tokenB.address
 	if sell_token == self.tokenA.address:
-		new_buy_token: uint256 = self.tokenBQty + sell_quantity
-		new_sell_token: uint256 = self.invariant / new_buy_token
-		self.tokenAQty = self.tokenAQty - new_sell_token
-		self.tokenBQty = new_buy_token
+		#new_buy_token: uint256 = self.tokenBQty + sell_quantity
+		#new_sell_token: uint256 = self.invariant / new_buy_token
+		self.tokenAQty = self.tokenAQty - sell_quantity
+		self.tokenBQty = self.tokenBQty + sell_quantity
 	elif sell_token == self.tokenB.address:
-		new_buy_token: uint256 = self.tokenAQty + sell_quantity
-		new_sell_token: uint256 = self.invariant / new_buy_token
-		self.tokenBQty = self.tokenBQty - new_sell_token
-		self.tokenAQty = new_buy_token
+		#new_buy_token: uint256 = self.tokenAQty + sell_quantity
+		#new_sell_token: uint256 = self.invariant / new_buy_token
+		self.tokenBQty = self.tokenBQty - sell_quantity
+		self.tokenAQty = self.tokenAQty + sell_quantity
 
 # Owner can withdraw their funds and destroy the market maker
 @external

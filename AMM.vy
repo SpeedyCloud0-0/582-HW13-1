@@ -21,9 +21,9 @@ def get_token_address(token: uint256) -> address:
 def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity: uint256, tokenB_quantity: uint256):
 	assert self.invariant == 0 #This ensures that liquidity can only be provided once
 	self.tokenA = ERC20(tokenA_addr)
-	self.tokenA.transferFrom(msg.sender, tokenA, tokenA_quantity)
+	self.tokenA.transferFrom(msg.sender, self.tokenA, tokenA_quantity)
 	self.tokenB = ERC20(tokenB_addr)
-	self.tokenB.transferFrom(msg.sender, tokenB, tokenB_quantity)
+	self.tokenB.transferFrom(msg.sender, self.tokenB, tokenB_quantity)
 	self.owner = msg.sender
 	self.tokenAQty = tokenA_quantity
 	self.tokenBQty = tokenB_quantity
@@ -35,11 +35,11 @@ def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity
 def tradeTokens(sell_token: address, sell_quantity: uint256):
 	assert sell_token == self.tokenA.address or sell_token == self.tokenB.address
 	if sell_token == self.tokenA.address:
-		new_buy_token: uint256 = tokenB_quantity + sell_quantity
+		new_buy_token: uint256 = self.tokenBQty + sell_quantity
 		new_sell_token: uint256 = self.invariant / new_buy_token
-		self.tokenA.transferFrom(msg.sender, tokenA, tokenA_quantity - new_sell_token)
-		self.tokenB.transferFrom(msg.sender, tokenB, new_buy_token)
-		self.tokenAQty = tokenA_quantity - new_sell_token
+		self.tokenA.transferFrom(msg.sender, self.tokenA, tokenAQty - new_sell_token)
+		self.tokenB.transferFrom(msg.sender, self.tokenB, new_buy_token)
+		self.tokenAQty = tokenAQty - new_sell_token
 		self.tokenBQty = new_buy_token
 
 # Owner can withdraw their funds and destroy the market maker

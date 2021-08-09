@@ -23,8 +23,8 @@ def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity
 	self.tokenA = ERC20(tokenA_addr)
 	self.tokenB = ERC20(tokenB_addr)
 	self.owner = msg.sender
-	self.tokenA.transferFrom(self.owner, tokenA_addr, tokenA_quantity)
-	self.tokenB.transferFrom(self.owner, tokenB_addr, tokenB_quantity)
+	self.tokenA.transferFrom(msg.sender, self, tokenA_quantity)
+	self.tokenB.transferFrom(msg.sender, self, tokenB_quantity)
 	self.tokenAQty = tokenA_quantity
 	self.tokenBQty = tokenB_quantity
 	self.invariant = tokenA_quantity * tokenB_quantity
@@ -35,17 +35,17 @@ def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity
 def tradeTokens(sell_token: address, sell_quantity: uint256):
 	assert sell_token == self.tokenA.address or sell_token == self.tokenB.address
 	if sell_token == self.tokenA.address:
-		#self.owner.transferFrom(self.owner, self.tokenA.address, sell_quantity)
+		self.tokenA.transferFrom(msg.sender, self, sell_quantity)
 		new_tokenA: uint256 = self.tokenAQty + sell_quantity
 		new_tokenB: uint256 = self.invariant / new_tokenA
-		#self.tokenB.transfer(self.owner, self.tokenBQty - new_tokenB)
+		self.tokenB.transfer(msg.sender, self.tokenBQty - new_tokenB)
 		self.tokenAQty = new_tokenA
 		self.tokenBQty = new_tokenB
 	elif sell_token == self.tokenB.address:
-		#self.owner.transferFrom(self.owner, self.tokenB.address, sell_quantity)
+		self.tokenB.transferFrom(msg.sender, self, sell_quantity)
 		new_tokenB: uint256 = self.tokenBQty + sell_quantity
 		new_tokenA: uint256 = self.invariant / new_tokenB
-		#self.tokenA.transfer(self.owner, self.tokenAQty - new_tokenA)
+		self.tokenA.transfer(msg.sender, self.tokenAQty - new_tokenA)
 		self.tokenAQty = new_tokenA
 		self.tokenBQty = new_tokenB
 
@@ -53,6 +53,6 @@ def tradeTokens(sell_token: address, sell_quantity: uint256):
 @external
 def ownerWithdraw():
     assert self.owner == msg.sender
-    self.tokenA.transfer(self.owner, self.tokenAQty)
-    self.tokenB.transfer(self.owner, self.tokenBQty)
+    self.tokenA.transfer(msg.sender, self.tokenAQty)
+    self.tokenB.transfer(msg.sender, self.tokenBQty)
     selfdestruct(self.owner)

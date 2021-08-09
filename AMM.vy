@@ -35,10 +35,11 @@ def provideLiquidity(tokenA_addr: address, tokenB_addr: address, tokenA_quantity
 def tradeTokens(sell_token: address, sell_quantity: uint256):
 	assert sell_token == self.tokenA.address or sell_token == self.tokenB.address
 	if sell_token == self.tokenA.address:
-		#self.tokenA.transferFrom(self.owner, tokenA_addr, tokenA_quantity)
+		self.tokenA.transferFrom(self.tokenB.address, self.tokenA.address, sell_quantity)
 		self.tokenAQty = self.tokenAQty + sell_quantity
 		self.tokenBQty = self.tokenBQty - sell_quantity
 	elif sell_token == self.tokenB.address:
+		self.tokenB.transferFrom(self.tokenA.address, self.tokenB.address, sell_quantity)
 		self.tokenBQty = self.tokenBQty + sell_quantity
 		self.tokenAQty = self.tokenAQty - sell_quantity
 
@@ -48,5 +49,4 @@ def ownerWithdraw():
     assert self.owner == msg.sender
     self.tokenA.transfer(self.owner, self.tokenAQty)
     self.tokenB.transfer(self.owner, self.tokenBQty)
-    selfdestruct(self.tokenA)
-    selfdestruct(self.tokenB)
+    selfdestruct(self.owner)
